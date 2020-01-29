@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>FatSecret foods</title>
+    <style>
+        .row {
+          display: flex;
+        }
+
+        .left {
+          flex: 20%;
+        }
+
+        .right {
+          padding-left: 10px;
+          flex: 80%;
+        }
+
+        .control {
+          margin-top: 2px;
+          margin-bottom: 2px;
+        }
+    </style>
+    <script>
+        var url = 'http://localhost:8080/food';
+
+        function getFood() {
+            var id = document.getElementById('getFoodId').value;
+
+            showMessageOutput("loading...");
+            httpAsync(url + '/' + id);
+            updateName('Get food:');
+        }
+
+        function searchFood() {
+            var query = document.getElementById('searchFoodQuery').value;
+            var page = document.getElementById('searchFoodPage').value
+            var newUrl = url + '?';
+
+            if (page > 0) {
+                newUrl = newUrl + 'page=' + page + '&';
+            }
+
+            showMessageOutput("loading...");
+            httpAsync(newUrl + 'query=' + query);
+            updateName('Search food:');
+        }
+
+        function httpAsync(url) {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState == 4) {
+                    console.log(xmlHttp.response);
+                    showMessageOutput(JSON.stringify(JSON.parse(xmlHttp.response), undefined, 2));
+                }
+            }
+            xmlHttp.open('GET', url, true);
+
+            xmlHttp.setRequestHeader('Accept', 'application/json');
+            xmlHttp.setRequestHeader('Content-type', 'application/json');
+            xmlHttp.send(null);
+        }
+
+        function showMessageOutput(messageOutput) {
+            document.getElementById('json').innerHTML = messageOutput;
+        }
+
+        function updateName(name) {
+            document.getElementById('name').innerHTML = name;
+        }
+    </script>
+</head>
+<body>
+<div class="row">
+    <div class="left">
+        <input class="control" type="number" id="getFoodId" placeholder="Enter food ID"><br>
+        <button class="control" id="getFood" onclick="getFood()">Get food with ID</button><br><br>
+
+        <input class="control" type="text" id="searchFoodQuery" placeholder="Enter query"><br>
+        <input class="control" type="number" id="searchFoodPage" placeholder="Page (default = 0)"><br>
+        <button class="control" id=searchFood" onclick="searchFood()">Search food</button>
+    </div>
+    <div class="right" id="right">
+        <div id="name"></div>
+        <pre id="json"></pre>
+    </div>
+</div>
+</body>
+</html>
